@@ -1,19 +1,14 @@
-import logging
-from aiogram import Bot, Dispatcher
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
-from decouple import config
-#from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import asyncio
+from settings import bot, dp
+from handlers.commands import router
 
-#from db_handler.db_class import PostgresHandler
 
-#pg_db = PostgresHandler(config('PG_LINK'))
-#scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
-admins = [int(admin_id) for admin_id in config('ADMINS').split(',')]
+async def main():
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+    dp.include_router(router)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
-bot = Bot(token=config('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-dp = Dispatcher(storage=MemoryStorage())
+
+if __name__ == "__main__":
+    asyncio.run(main())
